@@ -1,0 +1,35 @@
+{
+    "name": "staabm/oss-contribs",
+
+    "require": {
+        "php": "^8.2",
+        "knplabs/github-api": "^3.0",
+        "symfony/http-client": "^7.0",
+        "nyholm/psr7": "^1.8",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "http-interop/http-factory-guzzle": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "autoload": {
+        "classmap": ["src"]
+    },
+    "autoload-dev": {
+        "classmap": ["tests"]
+    },
+
+    "bin": [
+        "bin/oss-contribs"
+    ],
+    "scripts": {
+        "phpstan": "vendor/bin/phpstan analyze bin/ src/ --level 8",
+        "test": "vendor/bin/phpunit tests/"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^10.5"
+    }
+}
