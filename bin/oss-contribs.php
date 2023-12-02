@@ -45,11 +45,13 @@ $contribSummary = $reactionsFilter->search($pullRequests);
 foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
     echo $repoReactionSummary->repoName ."\n";
 
-    $sum = 0;
+    $sumReactions = 0;
+    $sumIssues = 0;
     foreach($repoReactionSummary->issueReactions as $issueReaction) {
         echo '  #'. $issueReaction->number.' - '. $issueReaction->title .' '. $issueReaction->reactionsCount ." Reactions\n";
 
-        $sum += $issueReaction->reactionsCount;
+        $sumReactions += $issueReaction->reactionsCount;
+        $sumIssues++;
     }
-    echo 'Total '. $repoReactionSummary->repoName ." Reactions: $sum\n\n";
+    echo 'Total '. $repoReactionSummary->repoName .": Fixed Issues $sumIssues; Reactions: $sumReactions\n\n";
 }
