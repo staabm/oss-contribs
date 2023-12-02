@@ -18,7 +18,7 @@ final class PullRequestFilter {
 
         $queryTemplate = <<<'GRAPHQL'
 query {
-  search(query: "%query%", type: ISSUE, first: 100 %cursor%) {
+  search(query: "%query%", type: ISSUE, first: 50 %cursor%) {
     edges {
       node {
         ... on PullRequest {
@@ -57,10 +57,6 @@ GRAPHQL;
 
         $cursor = '';
         do {
-            if ($cursor !== '') {
-                $cursor = ', after: "' . $cursor . '"';
-            }
-
             $query = str_replace('%query%', $queryFilter, $queryTemplate);
             $query = str_replace('%cursor%', $cursor, $query);
             $result = $graphql->execute($query);
@@ -80,7 +76,7 @@ GRAPHQL;
                 );
             }
 
-            $cursor = $result['data']['search']['pageInfo']['startCursor'];
+            $cursor = ', after: "' . $result['data']['search']['pageInfo']['endCursor'] . '"';
         } while ($result['data']['search']['pageInfo']['hasNextPage']);
     }
 }

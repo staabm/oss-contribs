@@ -15,35 +15,45 @@ final class ReactionsFilter {
      * @param iterable<PullRequest> $pullRequests
      */
     public function search(iterable $pullRequests): ContributionSummary {
-
-        $query = $this->buildQuery($pullRequests);
+        $issueReactions = [];
 
         $graphql = $this->client->graphql();
-        $result = $graphql->execute($query);
-
-        $repositoryReactionSummaries = [];
-        foreach($result['data'] as $repo) {
-            $repoName = $repo['nameWithOwner'];
-            unset($repo['nameWithOwner']);
-
-            $issueReactions = [];
-            foreach($repo as $issue) {
-                $number = $issue['number'];
-                $title = $issue['title'];
-                $reactionsCount = $issue['reactions']['totalCount'];
-
-                $reactions = [];
-                foreach($issue['reactions']['nodes'] as $reaction) {
-                    $reactions[] = new Reaction($reaction['content']);
-                }
-                $issueReactions[] = new IssueReaction(
-                    $number,
-                    $title,
-                    $reactionsCount,
-                    $reactions
-                );
+        foreach($this->chunkIterator($pullRequests, 25) as $pullsChunk) {
+            $query = $this->buildQuery($pullsChunk);
+            if ($query === null) {
+                break;
             }
 
+            $result = $graphql->execute($query);
+            foreach($result['data'] as $repo) {
+                $repoName = $repo['nameWithOwner'];
+                unset($repo['nameWithOwner']);
+
+                if (!isset($issueReactions[$repoName])) {
+                    $issueReactions[$repoName] = [];
+                }
+
+                foreach($repo as $issue) {
+                    $number = $issue['number'];
+                    $title = $issue['title'];
+                    $reactionsCount = $issue['reactions']['totalCount'];
+
+                    $reactions = [];
+                    foreach($issue['reactions']['nodes'] as $reaction) {
+                        $reactions[] = new Reaction($reaction['content']);
+                    }
+                    $issueReactions[$repoName][] = new IssueReaction(
+                        $number,
+                        $title,
+                        $reactionsCount,
+                        $reactions
+                    );
+                }
+            }
+        }
+
+        $repositoryReactionSummaries = [];
+        foreach($issueReactions as $repoName => $issueReactions) {
             $repositoryReactionSummaries[] = new RepositoryReactionSummary($repoName, $issueReactions);
         }
 
@@ -53,7 +63,7 @@ final class ReactionsFilter {
     /**
      * @param iterable<PullRequest> $pullRequests
      */
-    private function buildQuery(iterable $pullRequests): string {
+    private function buildQuery(iterable $pullRequests): ?string {
         $issuesPerRepo = [];
 
         foreach($pullRequests as $pr) {
@@ -105,6 +115,10 @@ final class ReactionsFilter {
                     ' . $subQuery . '
                 }
                 ';
+        }
+
+        if ($query === '') {
+            return null;
         }
 
         return '{

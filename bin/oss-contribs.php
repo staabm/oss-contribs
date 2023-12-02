@@ -35,7 +35,7 @@ $client->authenticate($authData['token'], Github\AuthMethod::ACCESS_TOKEN);
 $graphql = $client->graphql();
 
 $pullRequestFilter = new \staabm\OssContribs\PullRequest\PullRequestFilter($client);
-$pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:staabm created:>2023-10-01");
+$pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:staabm created:>2023-01-01");
 
 $reactionsFilter = new \staabm\OssContribs\PullRequest\ReactionsFilter($client);
 $contribSummary = $reactionsFilter->search($pullRequests);
@@ -45,7 +45,11 @@ $contribSummary = $reactionsFilter->search($pullRequests);
 foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
     echo $repoReactionSummary->repoName ."\n";
 
+    $sum = 0;
     foreach($repoReactionSummary->issueReactions as $issueReaction) {
         echo '  #'. $issueReaction->number.' - '. $issueReaction->title .' '. $issueReaction->reactionsCount ." Reactions\n";
+
+        $sum += $issueReaction->reactionsCount;
     }
+    echo 'Total '. $repoReactionSummary->repoName ." Reactions: $sum\n\n";
 }
