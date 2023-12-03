@@ -6,7 +6,7 @@ readonly class IssueReference
 {
     public function __construct(
         public DescriptionKeyword $keyword,
-        public string $issueRef
+        public string $issueRef // e.g. "phpstan/phpstan#10169"
     )
     {
     }

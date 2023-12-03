@@ -85,7 +85,8 @@ final class SummaryBuilder {
              * @var IssueReference $issue
              */
             foreach ($pr->referencedIssues as $issue) {
-                $repoIdentifier = str_replace('/', '__', $issue->getRepoIdentifier());
+                // replace chars not allowed in a graphql "name", see https://github.com/graphql/graphql-spec/issues/779
+                $repoIdentifier = str_replace(['/', '-'], '__', $issue->getRepoIdentifier());
 
                 if (!isset($issuesPerRepo[$repoIdentifier])) {
                     $issuesPerRepo[$repoIdentifier] = [];

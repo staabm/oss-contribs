@@ -74,7 +74,7 @@ GRAPHQL;
                     $pr['title'],
                     $pr['bodyText'],
                     $pr['url'],
-                    KeywordsParser::findReferencedIssues($pr['bodyText']),
+                    KeywordsParser::findReferencedIssues($pr['url'], $pr['bodyText']),
                 );
             }
 

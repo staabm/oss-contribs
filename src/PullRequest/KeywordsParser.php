@@ -7,7 +7,7 @@ final class KeywordsParser
     /**
      * @return array<IssueReference>
      */
-    static public function findReferencedIssues(string $bodyText): array
+    static public function findReferencedIssues(string $prUrl, string $bodyText): array
     {
         $keywords = [];
         foreach(DescriptionKeyword::cases() as $case) {
@@ -34,6 +34,18 @@ final class KeywordsParser
             $issues[] = new IssueReference(
                 DescriptionKeyword::from($matches[1][$i]),
                 $matches[2][$i].'#'.$matches[3][$i]
+            );
+        }
+
+        // find relative references "closes #597"
+        $matches = [];
+        preg_match_all('{('. implode('|', $keywords) .')\s+(#[0-9]+)}', $bodyText, $matches);
+
+        $urlParser = new PullRequestUrlParser($prUrl);
+        foreach($matches[0] as $i => $match) {
+            $issues[] = new IssueReference(
+                DescriptionKeyword::from($matches[1][$i]),
+                $urlParser->getRepoIdentifier().$matches[2][$i]
             );
         }
 
