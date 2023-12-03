@@ -44,30 +44,33 @@ $contribSummary = $reactionsFilter->build($pullRequests);
 
 foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
     $sumReactions = 0;
-    $sumIssues = 0;
     foreach($repoReactionSummary->issueReactions as $issueReaction) {
         $sumReactions += $issueReaction->reactionsCount;
-        $sumIssues++;
     }
 
     $metrics = [];
-    if ($repoReactionSummary->prCount > 0) {
-        $metrics[] = $repoReactionSummary->prCount. ' Pull Request(s)';
-    }
-    if ($sumIssues > 0) {
-        $metrics[] = $sumIssues. ' Fixed Issue(s)';
-    }
     if ($sumReactions > 0) {
         $metrics[] = $sumReactions. ' Reaction(s)';
     }
 
     echo $repoReactionSummary->repoName .": ". implode('; ', $metrics) ."\n";
-    foreach($repoReactionSummary->issueReactions as $issueReaction) {
-        echo '  #'. $issueReaction->number.' - '. $issueReaction->title;
-        if ($issueReaction->reactionsCount > 0) {
-            echo ' - '. $issueReaction->reactionsCount ." Reaction(s)";
+    if (count($repoReactionSummary->pullRequests) > 0) {
+        echo '  '. count($repoReactionSummary->pullRequests). ' Pull Request(s)'. "\n";
+        foreach($repoReactionSummary->pullRequests as $pullRequest) {
+            echo '    #'. $pullRequest->number.' - '. $pullRequest->title;
+            echo "\n";
         }
-        echo "\n";
+    }
+
+    if (count($repoReactionSummary->issueReactions) > 0) {
+        echo '  '.count($repoReactionSummary->issueReactions). ' Fixed Issue(s)'. "\n";
+        foreach($repoReactionSummary->issueReactions as $issueReaction) {
+            echo '    #'. $issueReaction->number.' - '. $issueReaction->title;
+            if ($issueReaction->reactionsCount > 0) {
+                echo ' - '. $issueReaction->reactionsCount ." Reaction(s)";
+            }
+            echo "\n";
+        }
     }
     echo "\n";
 }

@@ -4,11 +4,12 @@ namespace staabm\OssContribs\PullRequest;
 
 readonly class RepositoryContribSummary {
     /**
-     * @param array<IssueReaction> $issueReactions
+     * @param iterable<PullRequest> $pullRequests
+     * @param iterable<IssueReaction> $issueReactions
      */
     public function __construct(
         public string $repoName,
-        public int $prCount,
+        public iterable $pullRequests,
         public iterable $issueReactions,
     ) {
     }

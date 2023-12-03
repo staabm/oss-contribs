@@ -24,6 +24,7 @@ query {
         ... on PullRequest {
           url
           number
+          title
           bodyText
         }
       }
@@ -70,6 +71,7 @@ GRAPHQL;
 
                 yield new PullRequest(
                     $pr['number'],
+                    $pr['title'],
                     $pr['bodyText'],
                     $pr['url'],
                     KeywordsParser::findReferencedIssues($pr['bodyText']),

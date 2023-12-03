@@ -13,6 +13,7 @@ class PullRequestTest extends TestCase
     public function test() {
         $pr = new PullRequest(
             2393,
+            'Update dependency phpunit/phpunit to v9.6.15 (1.10.x)',
             'closes phpstan/phpstan#10169',
             'https://github.com/phpstan/phpstan-src/pull/2393',
             []

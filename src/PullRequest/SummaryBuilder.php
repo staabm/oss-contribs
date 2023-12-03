@@ -16,12 +16,14 @@ final class SummaryBuilder {
      */
     public function build(iterable $pullRequests): ContributionSummary {
         $issueReactions = [];
-        $prCount = [];
+        $perRepoPrs = [];
 
         $graphql = $this->client->graphql();
         foreach($this->chunkIterator($pullRequests, 25) as $pullsChunk) {
             foreach($pullsChunk as $pr) {
-                $prCount[$pr->getRepoIdentifier()] = ($prCount[$pr->getRepoIdentifier()] ?? 0) + 1;
+                $perRepoPrs[$pr->getRepoIdentifier()] ??= [];
+
+                $perRepoPrs[$pr->getRepoIdentifier()][] = $pr;
             }
 
             $query = $this->buildQuery($pullsChunk);
@@ -60,13 +62,13 @@ final class SummaryBuilder {
         $repositoryReactionSummaries = [];
 
         $issueRepos = array_keys($issueReactions);
-        $prRepos = array_keys($prCount);
+        $prRepos = array_keys($perRepoPrs);
         foreach(array_diff($prRepos, $issueRepos) as $repoName) {
-            $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $prCount[$repoName] ?? 0, []);
+            $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $perRepoPrs[$repoName] ?? [], []);
         }
 
         foreach($issueReactions as $repoName => $issueReactions) {
-            $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $prCount[$repoName] ?? 0, $issueReactions);
+            $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $perRepoPrs[$repoName] ?? [], $issueReactions);
         }
 
         return new ContributionSummary($repositoryReactionSummaries);

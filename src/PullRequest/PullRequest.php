@@ -8,6 +8,7 @@ readonly class PullRequest {
      */
     public function __construct(
         public int $number,
+        public string $title,
         public string $body,
         public string $url,
         public iterable $referencedIssues,
