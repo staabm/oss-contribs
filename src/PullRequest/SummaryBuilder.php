@@ -105,6 +105,17 @@ final class SummaryBuilder {
                     $firstIssue = $issue;
                 }
 
+                // XXX skip invalid issue references for now
+                if ($repoIdentifier === 'redaxo__redaxo' && $issue->getNumber() === 5840) {
+                    continue;
+                }
+                if ($repoIdentifier === 'TomasVotruba__unused__public' && $issue->getNumber() === 28) {
+                    continue;
+                }
+                if ($repoIdentifier === 'staabm__phpstan__dba' && $issue->getNumber() === 554) {
+                    continue;
+                }
+
                 $subQuery .= 'issue' . $issue->getNumber() . ': issue(number: ' . $issue->getNumber() . ') 
                       {
                           number
