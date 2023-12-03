@@ -13,4 +13,12 @@ readonly class PullRequest {
         public iterable $referencedIssues,
     ) {
     }
+
+    public function getRepoIdentifier(): string {
+        $path = parse_url($this->url, PHP_URL_PATH);
+        $parts = explode('/', $path);
+
+        return $parts[1] . '/' . $parts[2];
+    }
+
 }
