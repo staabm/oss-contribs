@@ -35,23 +35,39 @@ $client->authenticate($authData['token'], Github\AuthMethod::ACCESS_TOKEN);
 $graphql = $client->graphql();
 
 $pullRequestFilter = new \staabm\OssContribs\PullRequest\PullRequestFilter($client);
-$pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:staabm created:>2023-01-01");
+$pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:". $authData['username'] ." created:>2023-01-01");
 
-$reactionsFilter = new \staabm\OssContribs\PullRequest\ReactionsFilter($client);
-$contribSummary = $reactionsFilter->search($pullRequests);
+$reactionsFilter = new \staabm\OssContribs\PullRequest\SummaryBuilder($client);
+$contribSummary = $reactionsFilter->build($pullRequests);
 
 
 
 foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
-    echo $repoReactionSummary->repoName ."\n";
-
     $sumReactions = 0;
     $sumIssues = 0;
     foreach($repoReactionSummary->issueReactions as $issueReaction) {
-        echo '  #'. $issueReaction->number.' - '. $issueReaction->title .' '. $issueReaction->reactionsCount ." Reactions\n";
-
         $sumReactions += $issueReaction->reactionsCount;
         $sumIssues++;
     }
-    echo 'Total '. $repoReactionSummary->repoName .": Fixed Issues $sumIssues; Reactions: $sumReactions\n\n";
+
+    $metrics = [];
+    if ($repoReactionSummary->prCount > 0) {
+        $metrics[] = $repoReactionSummary->prCount. ' Pull Request(s)';
+    }
+    if ($sumIssues > 0) {
+        $metrics[] = $sumIssues. ' Fixed Issue(s)';
+    }
+    if ($sumReactions > 0) {
+        $metrics[] = $sumReactions. ' Reaction(s)';
+    }
+
+    echo $repoReactionSummary->repoName .": ". implode('; ', $metrics) ."\n";
+    foreach($repoReactionSummary->issueReactions as $issueReaction) {
+        echo '  #'. $issueReaction->number.' - '. $issueReaction->title;
+        if ($issueReaction->reactionsCount > 0) {
+            echo ' - '. $issueReaction->reactionsCount ." Reaction(s)";
+        }
+        echo "\n";
+    }
+    echo "\n";
 }

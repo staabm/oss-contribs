@@ -5,7 +5,7 @@ namespace staabm\OssContribs\PullRequest;
 use Github\Client;
 use Iterator;
 
-final class ReactionsFilter {
+final class SummaryBuilder {
     public function __construct(
         private readonly Client $client,
     ) {
@@ -14,11 +14,16 @@ final class ReactionsFilter {
     /**
      * @param iterable<PullRequest> $pullRequests
      */
-    public function search(iterable $pullRequests): ContributionSummary {
+    public function build(iterable $pullRequests): ContributionSummary {
         $issueReactions = [];
+        $prCount = [];
 
         $graphql = $this->client->graphql();
         foreach($this->chunkIterator($pullRequests, 25) as $pullsChunk) {
+            foreach($pullsChunk as $pr) {
+                $prCount[$pr->getRepoIdentifier()] = ($prCount[$pr->getRepoIdentifier()] ?? 0) + 1;
+            }
+
             $query = $this->buildQuery($pullsChunk);
             if ($query === null) {
                 break;
@@ -53,8 +58,15 @@ final class ReactionsFilter {
         }
 
         $repositoryReactionSummaries = [];
+
+        $issueRepos = array_keys($issueReactions);
+        $prRepos = array_keys($prCount);
+        foreach(array_diff($prRepos, $issueRepos) as $repoName) {
+            $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $prCount[$repoName] ?? 0, []);
+        }
+
         foreach($issueReactions as $repoName => $issueReactions) {
-            $repositoryReactionSummaries[] = new RepositoryReactionSummary($repoName, $issueReactions);
+            $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $prCount[$repoName] ?? 0, $issueReactions);
         }
 
         return new ContributionSummary($repositoryReactionSummaries);

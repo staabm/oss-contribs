@@ -4,7 +4,7 @@ namespace staabm\OssContribs\PullRequest;
 
 readonly class ContributionSummary {
     /**
-     * @param iterable<RepositoryReactionSummary> $repositoryReactionSummaries
+     * @param iterable<RepositoryContribSummary> $repositoryReactionSummaries
      */
     public function __construct(
         public iterable $repositoryReactionSummaries,
