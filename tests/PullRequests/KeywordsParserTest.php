@@ -22,6 +22,16 @@ class KeywordsParserTest extends TestCase
 
     static public function provideFindReferencedIssues() {
         yield [
+            "motivation: ease impl of https://github.com/phpstan/phpstan-src/pull/2657 by moving the expr-var loop before the context true/false branches which simplifies the branch cases
+
+closes https://github.com/phpstan/phpstan/issues/8366
+closes https://github.com/phpstan/phpstan/issues/10064",
+            [
+                new IssueReference(DescriptionKeyword::CLOSES, 'phpstan/phpstan#8366'),
+                new IssueReference(DescriptionKeyword::CLOSES, 'phpstan/phpstan#10064'),
+            ]
+        ];
+        yield [
             "closes phpstan/phpstan#10169",
             [
                 new IssueReference(DescriptionKeyword::CLOSES, 'phpstan/phpstan#10169')
