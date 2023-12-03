@@ -28,7 +28,7 @@ final class SummaryBuilder {
 
             $query = $this->buildQuery($pullsChunk);
             if ($query === null) {
-                break;
+                continue;
             }
 
             $result = $graphql->execute($query);

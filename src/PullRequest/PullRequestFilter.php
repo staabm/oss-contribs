@@ -18,7 +18,7 @@ final class PullRequestFilter {
 
         $queryTemplate = <<<'GRAPHQL'
 query {
-  search(query: "%query%", type: ISSUE, first: 50 %cursor%) {
+  search(query: "%query%", type: ISSUE, first: 75 %cursor%) {
     edges {
       node {
         ... on PullRequest {
