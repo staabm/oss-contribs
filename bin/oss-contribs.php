@@ -41,7 +41,10 @@ $reactionsFilter = new \staabm\OssContribs\PullRequest\SummaryBuilder($client);
 $contribSummary = $reactionsFilter->build($pullRequests);
 
 
-
+$totalRepoCount = 0;
+$totalPrCount = 0;
+$totalIssueCount = 0;
+$totalReactionsCount = 0;
 foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
     $sumReactions = 0;
     foreach($repoReactionSummary->issueReactions as $issueReaction) {
@@ -55,6 +58,8 @@ foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
 
     echo $repoReactionSummary->repoName .": ". implode('; ', $metrics) ."\n";
     if (count($repoReactionSummary->pullRequests) > 0) {
+        $totalPrCount += count($repoReactionSummary->pullRequests);
+
         echo '  '. count($repoReactionSummary->pullRequests). ' Pull Request(s)'. "\n";
         foreach($repoReactionSummary->pullRequests as $pullRequest) {
             echo '    #'. $pullRequest->number.' - '. $pullRequest->title;
@@ -63,6 +68,9 @@ foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
     }
 
     if (count($repoReactionSummary->issueReactions) > 0) {
+        $totalIssueCount += count($repoReactionSummary->issueReactions);
+        $totalReactionsCount += $sumReactions;
+
         echo '  '.count($repoReactionSummary->issueReactions). ' Fixed Issue(s)'. "\n";
         foreach($repoReactionSummary->issueReactions as $issueReaction) {
             echo '    #'. $issueReaction->number.' - '. $issueReaction->title;
@@ -73,4 +81,10 @@ foreach($contribSummary->repositoryReactionSummaries as $repoReactionSummary) {
         }
     }
     echo "\n";
+
+    $totalRepoCount++;
 }
+
+echo "\n\n";
+echo $authData['username'] ." contributed to ". $totalRepoCount ." Repositories\n";
+echo "  ". $totalPrCount ." Pull Request(s) - fixing ". $totalIssueCount ." Issue(s) - addressing ". $totalReactionsCount ." Reaction(s) \n";
