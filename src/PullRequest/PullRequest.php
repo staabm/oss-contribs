@@ -16,10 +16,7 @@ readonly class PullRequest {
     }
 
     public function getRepoIdentifier(): string {
-        $path = parse_url($this->url, PHP_URL_PATH);
-        $parts = explode('/', $path);
-
-        return $parts[1] . '/' . $parts[2];
+        return (new PullRequestUrlParser($this->url))->getRepoIdentifier();
     }
 
 }
