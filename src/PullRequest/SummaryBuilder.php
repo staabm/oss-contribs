@@ -7,6 +7,8 @@ use Iterator;
 use function PHPStan\dumpType;
 
 final class SummaryBuilder {
+    private const ISSUE_NOT_FOUND = 'Could not resolve to an Issue';
+
     public function __construct(
         private readonly Client $client,
     ) {
@@ -21,9 +23,11 @@ final class SummaryBuilder {
 
         $graphql = $this->client->graphql();
         foreach($this->chunkIterator($pullRequests, 25) as $pullsChunk) {
+            /**
+             * @var list<PullRequest> $pullsChunk
+             */
             foreach($pullsChunk as $pr) {
                 $perRepoPrs[$pr->getRepoIdentifier()] ??= [];
-
                 $perRepoPrs[$pr->getRepoIdentifier()][] = $pr;
             }
 
@@ -32,7 +36,35 @@ final class SummaryBuilder {
                 continue;
             }
 
-            $result = $graphql->execute($query);
+            try {
+                $result = $graphql->execute($query);
+            } catch (\RuntimeException $e) {
+                if (!str_contains($e->getMessage(), self::ISSUE_NOT_FOUND)) {
+                    throw $e;
+                }
+
+                // on issue not found, try each PR individually
+                foreach($pullsChunk as $pr) {
+                    $query = $this->buildQuery([$pr]);
+                    if ($query === null) {
+                        continue;
+                    }
+                    try {
+                        $result = $graphql->execute($query);
+                    } catch (\RuntimeException $e) {
+                        if (!str_contains($e->getMessage(), self::ISSUE_NOT_FOUND)) {
+                            throw $e;
+                        }
+
+                        fwrite(STDERR, "WARN: SKIP PR " . $pr->getRepoIdentifier() . "#" . $pr->number . " - ".$e->getMessage(). "\n");
+                    }
+                }
+            }
+
+            if (!isset($result['data'])) {
+                continue;
+            }
+
             foreach($result['data'] as $repo) {
                 $repoName = $repo['nameWithOwner'];
                 unset($repo['nameWithOwner']);
@@ -113,17 +145,6 @@ final class SummaryBuilder {
             foreach ($issues as $issue) {
                 if ($firstIssue === null) {
                     $firstIssue = $issue;
-                }
-
-                // XXX skip invalid issue references for now
-                if ($repoIdentifier === 'redaxo__redaxo' && $issue->getNumber() === 5840) {
-                    continue;
-                }
-                if ($repoIdentifier === 'TomasVotruba__unused__public' && $issue->getNumber() === 28) {
-                    continue;
-                }
-                if ($repoIdentifier === 'staabm__phpstan__dba' && $issue->getNumber() === 554) {
-                    continue;
                 }
 
                 $subQuery .= 'issue' . $issue->getNumber() . ': issue(number: ' . $issue->getNumber() . ') 
