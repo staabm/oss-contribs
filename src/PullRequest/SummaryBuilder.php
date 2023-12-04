@@ -21,7 +21,6 @@ final class SummaryBuilder {
         $issueReactions = [];
         $perRepoPrs = [];
 
-        $graphql = $this->client->graphql();
         foreach($this->chunkIterator($pullRequests, 25) as $pullsChunk) {
             /**
              * @var list<PullRequest> $pullsChunk
@@ -31,36 +30,7 @@ final class SummaryBuilder {
                 $perRepoPrs[$pr->getRepoIdentifier()][] = $pr;
             }
 
-            $query = $this->buildQuery($pullsChunk);
-            if ($query === null) {
-                continue;
-            }
-
-            try {
-                $result = $graphql->execute($query);
-            } catch (\RuntimeException $e) {
-                if (!str_contains($e->getMessage(), self::ISSUE_NOT_FOUND)) {
-                    throw $e;
-                }
-
-                // on issue not found, try each PR individually
-                foreach($pullsChunk as $pr) {
-                    $query = $this->buildQuery([$pr]);
-                    if ($query === null) {
-                        continue;
-                    }
-                    try {
-                        $result = $graphql->execute($query);
-                    } catch (\RuntimeException $e) {
-                        if (!str_contains($e->getMessage(), self::ISSUE_NOT_FOUND)) {
-                            throw $e;
-                        }
-
-                        fwrite(STDERR, "WARN: SKIP PR " . $pr->getRepoIdentifier() . "#" . $pr->number . " - ".$e->getMessage(). "\n");
-                    }
-                }
-            }
-
+            $result = $this->buildResult($pullsChunk);
             if (!isset($result['data'])) {
                 continue;
             }
@@ -204,6 +174,47 @@ final class SummaryBuilder {
         if(count($chunk)){
             yield $chunk;
         }
+    }
+
+    /**
+     * @param list<PullRequest> $pullRequests
+     */
+    private function buildResult(array $pullsChunk): array
+    {
+        $graphql = $this->client->graphql();
+
+        $query = $this->buildQuery($pullsChunk);
+        if ($query === null) {
+            return [];
+        }
+
+        $result = [];
+        try {
+            $result = $graphql->execute($query);
+        } catch (\RuntimeException $e) {
+            if (!str_contains($e->getMessage(), self::ISSUE_NOT_FOUND)) {
+                throw $e;
+            }
+
+            // on issue not found, try each PR individually
+            foreach ($pullsChunk as $pr) {
+                $query = $this->buildQuery([$pr]);
+                if ($query === null) {
+                    continue;
+                }
+                try {
+                    $result = $graphql->execute($query);
+                } catch (\RuntimeException $e) {
+                    if (!str_contains($e->getMessage(), self::ISSUE_NOT_FOUND)) {
+                        throw $e;
+                    }
+
+                    fwrite(STDERR, "WARN: SKIP PR " . $pr->getRepoIdentifier() . "#" . $pr->number . " - " . $e->getMessage() . "\n");
+                }
+            }
+        }
+
+        return $result;
     }
 
 }
