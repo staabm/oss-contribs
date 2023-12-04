@@ -68,7 +68,7 @@ final class ConsoleApplication {
         }
 
         echo "\n\n";
-        echo $username ." contributed to ". $totalRepoCount ." Repositories\n";
-        echo "  ". $totalPrCount ." Pull Request(s) - fixing ". $totalIssueCount ." Issue(s) - addressing ". $totalReactionsCount ." Reaction(s) \n";
+        echo "@".$username ." contributed to ". $totalRepoCount ." open-source projects on github.com in ". $year ."\n";
+        echo "  ". $totalPrCount ." merged Pull Request(s) - fixing ". $totalIssueCount ." reported Issue(s) - addressing ". $totalReactionsCount ." Reaction(s) \n";
     }
 }
