@@ -17,7 +17,7 @@ final class ConsoleApplication {
         // graphql cheat sheet at https://medium.com/@tharshita13/github-graphql-api-cheatsheet-38e916fe76a3
         // examples at https://gist.github.com/MichaelCurrin/f8a7a11451ce4ec055d41000c915b595#resources
         $pullRequestFilter = new PullRequestFilter($client);
-        $pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:". $username ." created:".$year);
+        $pullRequests = $pullRequestFilter->search("is:pr is:public is:merged sort:updated-desc author:". $username ." created:".$year);
 
         $reactionsFilter = new SummaryBuilder($client);
         $contribSummary = $reactionsFilter->build($pullRequests);
