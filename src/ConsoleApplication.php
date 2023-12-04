@@ -9,31 +9,15 @@ use staabm\OssContribs\PullRequest\SummaryBuilder;
 use Symfony\Component\HttpClient\HttplugClient;
 
 final class ConsoleApplication {
-    public function run():void {
+    /**
+     * @param int<1950, 2050> $year
+     */
+    public function run(Client $client, string $username, int $year):void {
 
         // graphql cheat sheet at https://medium.com/@tharshita13/github-graphql-api-cheatsheet-38e916fe76a3
         // examples at https://gist.github.com/MichaelCurrin/f8a7a11451ce4ec055d41000c915b595#resources
-
-        $jsonString = file_get_contents('auth.json');
-        if (!$jsonString) {
-            throw new \RuntimeException('auth.json not found');
-        }
-        $authData = json_decode($jsonString, true);
-        if (!$authData) {
-            throw new \RuntimeException('Unable to json-decode auth.json');
-        }
-        if (!isset($authData['username'])) {
-            throw new \RuntimeException('missing "username" in auth.json');
-        }
-        if (!isset($authData['token'])) {
-            throw new \RuntimeException('missing "token" in auth.json');
-        }
-
-        $client = Client::createWithHttpClient(new HttplugClient());
-        $client->authenticate($authData['token'], AuthMethod::ACCESS_TOKEN);
-
         $pullRequestFilter = new PullRequestFilter($client);
-        $pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:". $authData['username'] ." created:>2023-01-01");
+        $pullRequests = $pullRequestFilter->search("is:pr is:public is:merged author:". $username ." created:".$year);
 
         $reactionsFilter = new SummaryBuilder($client);
         $contribSummary = $reactionsFilter->build($pullRequests);
@@ -84,7 +68,7 @@ final class ConsoleApplication {
         }
 
         echo "\n\n";
-        echo $authData['username'] ." contributed to ". $totalRepoCount ." Repositories\n";
+        echo $username ." contributed to ". $totalRepoCount ." Repositories\n";
         echo "  ". $totalPrCount ." Pull Request(s) - fixing ". $totalIssueCount ." Issue(s) - addressing ". $totalReactionsCount ." Reaction(s) \n";
     }
 }
