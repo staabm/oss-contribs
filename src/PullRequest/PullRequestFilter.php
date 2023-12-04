@@ -3,6 +3,7 @@
 namespace staabm\OssContribs\PullRequest;
 
 use Github\Client;
+use Iterator;
 
 final class PullRequestFilter {
     public function __construct(
@@ -11,9 +12,9 @@ final class PullRequestFilter {
     }
 
     /**
-     * @return iterable<PullRequest>
+     * @return Iterator<PullRequest>
      */
-    public function search(string $queryFilter): iterable {
+    public function search(string $queryFilter): Iterator {
         $graphql = $this->client->graphql();
 
         $queryTemplate = <<<'GRAPHQL'

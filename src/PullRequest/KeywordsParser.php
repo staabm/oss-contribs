@@ -5,7 +5,7 @@ namespace staabm\OssContribs\PullRequest;
 final class KeywordsParser
 {
     /**
-     * @return array<IssueReference>
+     * @return list<IssueReference>
      */
     static public function findReferencedIssues(string $prUrl, string $bodyText): array
     {

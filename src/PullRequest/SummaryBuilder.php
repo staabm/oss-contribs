@@ -4,6 +4,7 @@ namespace staabm\OssContribs\PullRequest;
 
 use Github\Client;
 use Iterator;
+use function PHPStan\dumpType;
 
 final class SummaryBuilder {
     public function __construct(
@@ -12,9 +13,9 @@ final class SummaryBuilder {
     }
 
     /**
-     * @param iterable<PullRequest> $pullRequests
+     * @param Iterator<PullRequest> $pullRequests
      */
-    public function build(iterable $pullRequests): ContributionSummary {
+    public function build(Iterator $pullRequests): ContributionSummary {
         $issueReactions = [];
         $perRepoPrs = [];
 
@@ -59,15 +60,24 @@ final class SummaryBuilder {
             }
         }
 
+        return $this->buildSummary($issueReactions, $perRepoPrs);
+    }
+
+    /**
+     * @param array<string, list<IssueReaction>> $issueReactions
+     * @param array<string, list<PullRequest>> $perRepoPrs
+     */
+    public function buildSummary(array $issueReactions, array $perRepoPrs): ContributionSummary
+    {
         $repositoryReactionSummaries = [];
 
         $issueRepos = array_keys($issueReactions);
         $prRepos = array_keys($perRepoPrs);
-        foreach(array_diff($prRepos, $issueRepos) as $repoName) {
+        foreach (array_diff($prRepos, $issueRepos) as $repoName) {
             $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $perRepoPrs[$repoName] ?? [], []);
         }
 
-        foreach($issueReactions as $repoName => $issueReactions) {
+        foreach ($issueReactions as $repoName => $issueReactions) {
             $repositoryReactionSummaries[] = new RepositoryContribSummary($repoName, $perRepoPrs[$repoName] ?? [], $issueReactions);
         }
 
@@ -75,9 +85,9 @@ final class SummaryBuilder {
     }
 
     /**
-     * @param iterable<PullRequest> $pullRequests
+     * @param list<PullRequest> $pullRequests
      */
-    private function buildQuery(iterable $pullRequests): ?string {
+    private function buildQuery(array $pullRequests): ?string {
         $issuesPerRepo = [];
 
         foreach($pullRequests as $pr) {
@@ -155,9 +165,9 @@ final class SummaryBuilder {
     /**
      * @template T
      * @param Iterator<T> $it
-     * @return Iterator<T>
+     * @return Iterator<list<T>>
      */
-    private function chunkIterator(Iterator $it, int $n)
+    private function chunkIterator(Iterator $it, int $n): Iterator
     {
         $chunk = [];
 
