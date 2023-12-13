@@ -53,3 +53,9 @@ TomasVotruba/unused-public:
   693 merged Pull Request(s) - fixing 90 reported Issue(s) - addressing 12 Reaction(s)
 
 ```
+
+
+## Give back
+
+In case you find this tool useful, [please consider supporting my open source work](https://github.com/sponsors/staabm).
+
