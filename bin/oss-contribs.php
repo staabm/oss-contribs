@@ -46,9 +46,6 @@ $authData = json_decode($jsonString, true);
 if (!$authData) {
     throw new \RuntimeException('Unable to json-decode auth.json');
 }
-if (!isset($authData['username'])) {
-    throw new \RuntimeException('missing "username" in auth.json');
-}
 if (!isset($authData['token'])) {
     throw new \RuntimeException('missing "token" in auth.json');
 }
@@ -56,7 +53,8 @@ if (!isset($authData['token'])) {
 $client = Client::createWithHttpClient(new HttplugClient());
 $client->authenticate($authData['token'], AuthMethod::ACCESS_TOKEN);
 
+$username = CliHelper::askUsername();
 $year = CliHelper::askYear();
 
 $app= new ConsoleApplication();
-$app->run($client, $authData['username'], $year);
+$app->run($client, $username, $year);

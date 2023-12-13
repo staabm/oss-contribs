@@ -5,10 +5,9 @@ namespace staabm\OssContribs;
 final class CliHelper {
     public static function setupAuth(string $authFile)
     {
-        $username = self::askUsername();
         $token = self::askApiToken();
 
-        file_put_contents($authFile, json_encode(['username' => $username, 'token' => $token], JSON_PRETTY_PRINT));
+        file_put_contents($authFile, json_encode(['token' => $token], JSON_PRETTY_PRINT));
     }
 
     static public function askYear(): int {
@@ -24,7 +23,7 @@ final class CliHelper {
         }
     }
 
-    static private function askUsername(): string {
+    static public function askUsername(): string {
         while (true) {
             $answer = self::ask('Enter the GitHub username you want to analyze (e.g. staabm):');
 
