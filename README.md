@@ -2,7 +2,7 @@
 
 simple contributions statistics generator
 
-- generates a list of merged pull requests in public repositories
+- generates a list of **merged** pull requests in **public** repositories
 - generates a list of issues, these pull requests addressed
 - generates a count of user reactions on these pull requests and issues
 
