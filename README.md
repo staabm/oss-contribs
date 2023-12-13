@@ -5,6 +5,7 @@ simple contributions statistics generator
 - generates a list of **merged** pull requests in **public** repositories
 - generates a list of issues, these pull requests addressed
 - generates a count of user reactions on these pull requests and issues
+- takes referenced issues into account event for PRs not targeted to the default branch
 
 the result is grouped by repository
 
