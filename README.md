@@ -6,11 +6,12 @@ simple contributions statistics generator
 ## Setup / Run
 
 - `composer global require staabm/oss-contribs`
-- change into the projects global file location
-- copy the config file: `cp auth.json.example auth.json`
-- modify the `auth.json` and add your username and a api token
 - run `oss-contribs` on your console
   - or use `php bin/oss-contribs` from within the projects folder, in case global composer binaries are not on your PATH
+
+On first run the tool will ask you for an GitHub.com api token.
+
+On any subsequent run you only need to enter a username and a year you want to get the statistics for.
 
 ## Example output
 
