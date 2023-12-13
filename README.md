@@ -2,6 +2,12 @@
 
 simple contributions statistics generator
 
+- generates a list of merged pull requests in public repositories
+- generates a list of issues, these pull requests addressed
+- generates a count of user reactions on these pull requests and issues
+
+the result is grouped by repositoriy
+
 
 ## Setup / Run
 
@@ -43,6 +49,7 @@ TomasVotruba/unused-public:
 
 …
 
-@staabm contributed to 65 open-source projects on github.com in 2023
-  686 merged Pull Request(s) - fixing 86 reported Issue(s)
+@staabm contributed to 66 open-source projects on github.com in 2023
+  693 merged Pull Request(s) - fixing 90 reported Issue(s) - addressing 12 Reaction(s)
+
 ```
