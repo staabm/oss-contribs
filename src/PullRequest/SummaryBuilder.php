@@ -177,7 +177,7 @@ final class SummaryBuilder {
     }
 
     /**
-     * @param list<PullRequest> $pullRequests
+     * @param list<PullRequest> $pullsChunk
      */
     private function buildResult(array $pullsChunk): array
     {

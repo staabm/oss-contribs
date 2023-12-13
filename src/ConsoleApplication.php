@@ -10,7 +10,7 @@ use Symfony\Component\HttpClient\HttplugClient;
 
 final class ConsoleApplication {
     /**
-     * @param int<1950, 2050> $year
+     * @param int<1990, 2050> $year
      */
     public function run(Client $client, string $username, int $year):void {
 

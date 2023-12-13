@@ -3,13 +3,16 @@
 namespace staabm\OssContribs;
 
 final class CliHelper {
-    public static function setupAuth(string $authFile)
+    public static function setupAuth(string $authFile): void
     {
         $token = self::askApiToken();
 
         file_put_contents($authFile, json_encode(['token' => $token], JSON_PRETTY_PRINT));
     }
 
+    /**
+     * @return int<1990, 2050>
+     */
     static public function askYear(): int {
         while (true) {
             $answer = (int) self::ask('Enter the year you want to analyze (e.g. 2023):');
