@@ -27,7 +27,7 @@ foreach ($paths as $path) {
     }
 }
 
-$version = '0.2';
+$version = '0.2.1';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 'stderr');
