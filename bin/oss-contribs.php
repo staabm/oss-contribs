@@ -27,8 +27,14 @@ foreach ($paths as $path) {
     }
 }
 
+$version = '0.2';
+
 error_reporting(E_ALL);
 ini_set('display_errors', 'stderr');
+
+fwrite(STDERR, "oss-contribs $version". PHP_EOL);
+fwrite(STDERR,  "Analyze your open source contributions - created by Markus Staab.". PHP_EOL);
+fwrite(STDERR,  "https://github.com/staabm/oss-contribs". PHP_EOL . PHP_EOL);
 
 $authFile = getcwd() .'/auth.json';
 $jsonString = @file_get_contents($authFile);
