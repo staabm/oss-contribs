@@ -6,7 +6,7 @@ simple contributions statistics generator
 - generates a list of issues, these pull requests addressed
 - generates a count of user reactions on these pull requests and issues
 
-the result is grouped by repositoriy
+the result is grouped by repository
 
 
 ## Setup / Run
