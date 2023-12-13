@@ -31,7 +31,7 @@ ini_set('display_errors', 'stderr');
 
 $jsonString = file_get_contents('auth.json');
 if (!$jsonString) {
-    throw new \RuntimeException('auth.json not found');
+    throw new \RuntimeException('auth.json not found in '.getcwd());
 }
 $authData = json_decode($jsonString, true);
 if (!$authData) {
@@ -47,5 +47,18 @@ if (!isset($authData['token'])) {
 $client = Client::createWithHttpClient(new HttplugClient());
 $client->authenticate($authData['token'], AuthMethod::ACCESS_TOKEN);
 
+$year = null;
+while (true) {
+    $answer = (int) ConsoleApplication::ask('Enter the year you want to analyze (e.g. 2023):');
+
+    if ($answer < 2000 || $answer > 2050) {
+        echo 'Invalid year. Please try again.'.PHP_EOL;
+        continue;
+    }
+
+    $year = $answer;
+    break;
+}
+
 $app= new ConsoleApplication();
-$app->run($client, $authData['username'], 2023);
+$app->run($client, $authData['username'], $year);

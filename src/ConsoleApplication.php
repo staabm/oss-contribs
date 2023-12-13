@@ -71,4 +71,14 @@ final class ConsoleApplication {
         echo "@".$username ." contributed to ". $totalRepoCount ." open-source projects on github.com in ". $year ."\n";
         echo "  ". $totalPrCount ." merged Pull Request(s) - fixing ". $totalIssueCount ." reported Issue(s) - addressing ". $totalReactionsCount ." Reaction(s) \n";
     }
+
+    static public function ask(string $question): string {
+        echo $question.' ';
+
+        $handle = fopen("php://stdin","r");
+        $answer = fgets($handle);
+        fclose($handle);
+
+        return trim($answer ?: '');
+    }
 }
