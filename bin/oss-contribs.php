@@ -11,6 +11,7 @@
 
 use Github\AuthMethod;
 use Github\Client;
+use staabm\OssContribs\CliHelper;
 use staabm\OssContribs\ConsoleApplication;
 use Symfony\Component\HttpClient\HttplugClient;
 
@@ -29,9 +30,17 @@ foreach ($paths as $path) {
 error_reporting(E_ALL);
 ini_set('display_errors', 'stderr');
 
-$jsonString = file_get_contents('auth.json');
+$authFile = getcwd() .'/auth.json';
+$jsonString = @file_get_contents($authFile);
 if (!$jsonString) {
-    throw new \RuntimeException('auth.json not found in '.getcwd());
+    CliHelper::setupAuth($authFile);
+
+    $jsonString = @file_get_contents($authFile);
+    if (!$jsonString) {
+        throw new \RuntimeException('auth.json not found in '.$authFile);
+    } else {
+        echo $authFile .' successfully created.'.PHP_EOL;
+    }
 }
 $authData = json_decode($jsonString, true);
 if (!$authData) {
@@ -47,18 +56,7 @@ if (!isset($authData['token'])) {
 $client = Client::createWithHttpClient(new HttplugClient());
 $client->authenticate($authData['token'], AuthMethod::ACCESS_TOKEN);
 
-$year = null;
-while (true) {
-    $answer = (int) ConsoleApplication::ask('Enter the year you want to analyze (e.g. 2023):');
-
-    if ($answer < 2000 || $answer > 2050) {
-        echo 'Invalid year. Please try again.'.PHP_EOL;
-        continue;
-    }
-
-    $year = $answer;
-    break;
-}
+$year = CliHelper::askYear();
 
 $app= new ConsoleApplication();
 $app->run($client, $authData['username'], $year);
