@@ -1,5 +1,7 @@
 {
     "name": "staabm/oss-contribs",
+    "keywords": ["github", "contributions", "analyzer", "statistic"],
+    "license": "MIT",
 
     "require": {
         "php": "^8.2",
