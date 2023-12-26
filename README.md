@@ -23,7 +23,7 @@ On any subsequent run you only need to enter a username and a year you want to g
 ## Example output
 
 ```
-> oss-contribs
+> oss-contribs | tee myresults.txt
 
 micronax/carbon-german-holidays:
   1 Pull Request(s)
